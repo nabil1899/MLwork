@@ -18,8 +18,8 @@ class NN(nn.Module):
 
         self.fc = nn.Sequential(
 
-            nn.Linear(input_dim, 15),
-            nn.Linear(15, output_dim)
+            nn.Linear(input_dim, 64),
+            nn.Linear(64, output_dim)
 
         )
 
