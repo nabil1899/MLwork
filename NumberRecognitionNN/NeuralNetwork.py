@@ -15,12 +15,12 @@ from collections import deque
 class NN(nn.Module):
     def __init__(self, input_dim, output_dim):
         super(NN, self).__init__()
+
         self.fc = nn.Sequential(
-            nn.Linear(input_dim, 64),  # Increased size for hidden layers
-            nn.ReLU(),
-            nn.Linear(64, 64),
-            nn.ReLU(),
-            nn.Linear(64, output_dim)
+
+            nn.Linear(input_dim, 15),
+            nn.Linear(15, output_dim)
+
         )
 
     def forward(self, states):
@@ -29,9 +29,9 @@ class NN(nn.Module):
         return self.fc(x)
 
 
-class DQAgent:
+class Agent:
 
-    def __init__(self, state_dim, action_dim,lr=0.001):
+    def __init__(self, state_dim, action_dim,lr=0.01):
         self.state_dim = state_dim
         self.action_dim = action_dim
         self.lr = lr
@@ -40,24 +40,23 @@ class DQAgent:
         self.model = NN(state_dim, action_dim)
         
         self.optimizer = optim.Adam(self.model.parameters(), lr=self.lr)
-        self.loss_fn = nn.SmoothL1Loss()
+        self.loss_fn = nn.CrossEntropyLoss()
 
+    def forward(self,states):
+        return self.model(states)
 
+    def train(self,state,target):
+        self.model.train()
+        states = torch.FloatTensor(state)
 
-    def train(self):
-
-        # Compute target Q-values
-        with torch.no_grad():
-            next_q_values = self.target_model(next_states)
-            max_next_q_values = next_q_values.max(dim=1)[0]
-            target_q_values = rewards + (1 - dones) * self.gamma * max_next_q_values
 
         # Compute current Q-values
-        q_values = self.model(states)
-        current_q_values = q_values.gather(1, actions.unsqueeze(1)).squeeze(1)
+        current = self.model(states)
+        target_values=states = torch.FloatTensor(target)
+        # current_q_values = q_values.gather(1, actions.unsqueeze(1)).squeeze(1)
 
         # Compute loss
-        loss = self.loss_fn(current_q_values, target_q_values)
+        loss = self.loss_fn(current, target_values)
 
         # Backpropagation
         self.optimizer.zero_grad()
