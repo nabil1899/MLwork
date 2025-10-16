@@ -4,7 +4,7 @@ from csvreader import read_csv
 from random import randint
 import matplotlib.pyplot as plt
 
-NB_FOLDS=2
+NB_FOLDS=5
 def get_lines(k,index,number):
     train = []
     test = []
