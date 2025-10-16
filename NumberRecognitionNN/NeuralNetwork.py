@@ -13,13 +13,12 @@ from collections import deque
 
 
 class NN(nn.Module):
-    def __init__(self, input_dim, output_dim):
+    def __init__(self, input_dim, output_dim,hidden_dim):
         super(NN, self).__init__()
 
         self.fc = nn.Sequential(
-
-            nn.Linear(input_dim, 64),
-            nn.Linear(64, output_dim)
+            nn.Linear(input_dim, hidden_dim),
+            nn.Linear(hidden_dim, output_dim)
 
         )
 
@@ -31,13 +30,13 @@ class NN(nn.Module):
 
 class Agent:
 
-    def __init__(self, state_dim, action_dim,lr=0.01):
+    def __init__(self, state_dim, action_dim,hidden_dim,lr=0.01):
         self.state_dim = state_dim
         self.action_dim = action_dim
         self.lr = lr
 
         # Models
-        self.model = NN(state_dim, action_dim)
+        self.model = NN(state_dim, action_dim,hidden_dim)
         
         self.optimizer = optim.Adam(self.model.parameters(), lr=self.lr)
         self.loss_fn = nn.CrossEntropyLoss()
