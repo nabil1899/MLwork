@@ -16,7 +16,11 @@ def get_lines(k,index,number):
             train.append(i)
     
     return train, test
-
+def normalize(list):
+    result=[]
+    for i in list:
+        result.append(i/255)
+    return result
 def hiddenLayerComparaison(hidden):
     df = read_csv("train.csv")
     accuracies = []
@@ -26,16 +30,17 @@ def hiddenLayerComparaison(hidden):
         accuracy=0
         train, test = get_lines(NB_FOLDS, fold, 42000)
         for j in train:
-
-            target = [0] * 10
-            x = j #randint(0,28000)
-            target[df.loc[x,df.columns == "label"].values[0]]=1000
+            x = j  # randint(0,28000)
+            """target = [0] * 10
             
-            agent.train(df.loc[x,df.columns != "label"].values.tolist(),target)
+            target[df.loc[x,df.columns == "label"].values[0]]=1000"""
+            target = int(df.loc[x,df.columns == "label"].values[0])
+
+            agent.train(normalize(df.loc[x,df.columns != "label"].values.tolist()),target)
 
         for j in test:
 
-            if(torch.argmax(agent.forward(df.loc[j,df.columns != "label"].values.tolist())).item()== df.loc[j,df.columns == "label"].values[0]):
+            if(torch.argmax(agent.forward(normalize(df.loc[j,df.columns != "label"].values.tolist()))).item()== df.loc[j,df.columns == "label"].values[0]):
                 accuracy+=1
         accuracies.append(accuracy / (42000 / NB_FOLDS))
 
@@ -44,10 +49,12 @@ def hiddenLayerComparaison(hidden):
 
 if __name__ == "__main__":
     accuracies=[]
-    for i in range(16,128,16):
+    for i in range(80,96,16):
         print(i)
         accuracies.append(hiddenLayerComparaison(i))
+    print(accuracies)
     plt.plot(accuracies)
     plt.show()
+
 
 

@@ -18,6 +18,7 @@ class NN(nn.Module):
 
         self.fc = nn.Sequential(
             nn.Linear(input_dim, hidden_dim),
+            nn.ReLU(),
             nn.Linear(hidden_dim, output_dim)
 
         )
@@ -30,7 +31,7 @@ class NN(nn.Module):
 
 class Agent:
 
-    def __init__(self, state_dim, action_dim,hidden_dim,lr=0.01):
+    def __init__(self, state_dim, action_dim,hidden_dim,lr=0.001):
         self.state_dim = state_dim
         self.action_dim = action_dim
         self.lr = lr
@@ -46,12 +47,12 @@ class Agent:
 
     def train(self,state,target):
         self.model.train()
-        states = torch.FloatTensor(state)
+        states = torch.FloatTensor(state).unsqueeze(0)
 
 
         # Compute current Q-values
         current = self.model(states)
-        target_values=states = torch.FloatTensor(target)
+        target_values= torch.tensor([target], dtype=torch.long)
         # current_q_values = q_values.gather(1, actions.unsqueeze(1)).squeeze(1)
 
         # Compute loss
